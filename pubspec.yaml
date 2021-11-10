@@ -73,6 +73,7 @@ flutter:
     - assets/newrest-3.jpg
     - assets/newrest-4.jpg
     - assets/grill-2.jpg
+    - assets/search.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
