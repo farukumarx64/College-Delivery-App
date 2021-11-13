@@ -36,6 +36,9 @@ dependencies:
   cupertino_icons: ^1.0.2
   salomon_bottom_bar: ^3.1.0
   google_fonts: ^2.1.0
+  anim_search_bar: ^2.0.2
+  material_floating_search_bar: ^0.3.6
+  flutter_screenutil: ^5.0.0+2
 
 dev_dependencies:
   flutter_test:
@@ -74,6 +77,8 @@ flutter:
     - assets/newrest-4.jpg
     - assets/grill-2.jpg
     - assets/search.png
+    - assets/pizza-2.jpg
+    - assets/proxi-2.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
