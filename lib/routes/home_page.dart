@@ -1,9 +1,11 @@
 import 'package:anim_search_bar/anim_search_bar.dart';
+import 'package:campus_delivery/routes/restaurant%20info/restaurant_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'package:campus_delivery/food_data.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -15,8 +17,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   var _currentIndex = 0;
   var barColor = 0xFF43A047;
+  var otherColor = 0xFF1B5E20;
   late ScrollController controller;
   TextEditingController textController = TextEditingController();
+
+  var foodData = FoodData();
+
 
   @override
   void initState() {
@@ -37,73 +43,55 @@ class _HomePageState extends State<HomePage> {
         builder: (context, constrains) {
           return Column(
             children: [
-              SizedBox(height: 40),
-              Text(
-                'AUI Delivery',
-                style: GoogleFonts.jacquesFrancois(
-                    fontSize: 50,
-                    fontWeight: FontWeight.w400,
-                    color: Color(barColor)),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+              Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  AnimSearchBar(
-                      rtl: true,
-                      autoFocus: true,
-                      width: 330,
-                      textController: textController,
-                      closeSearchOnSuffixTap: false,
-                      onSuffixTap: () {}),
-                  SizedBox(
-                    width: 15,
-                  )
+                  SizedBox(height: 40),
+                  Text(
+                    'AUI Delivery',
+                    style: GoogleFonts.jacquesFrancois(
+                        fontSize: 30,
+                        fontWeight: FontWeight.w400,
+                        color: Color(barColor)),
+                  ),
                 ],
+              ),
+              SizedBox(
+                height: 60,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    AnimSearchBar(
+                      suffixIcon: Icon(Icons.search,
+                      color: Color(otherColor),),
+                        rtl: true,
+                        autoFocus: true,
+                        width: 330,
+                        textController: textController,
+                        closeSearchOnSuffixTap: false,
+                        onSuffixTap: () {}),
+                    SizedBox(
+                      width: 15,
+                    )
+                  ],
+                ),
               ),
               homePageListView(),
             ],
           );
         },
       ),
-      floatingActionButton: ScrollToHideWidget(
-        controller: controller,
-        child: bottomCustomAppBar(),
-        height: 60,
-      ),
+      bottomNavigationBar: bottomCustomAppBar(),
     );
   }
 
   Expanded homePageListView() {
-    final List<String> locations = <String>[
-      'Grill',
-      'Proxi Rest',
-      'Cafeteria',
-      'Pizzeria',
-      'Store',
-      'NewRest'
-    ];
-    final List<String> locationDetails = [
-      'The Grill Restaurant beside Newrest',
-      'The Fast Food Restaurant',
-      'The Cafeteria in Building 2',
-      'The Pizza place in Building 3',
-      'The Convenient Store',
-      'The famous Restaurant in Building 3'
-    ];
-    final List<String> imgUrls = [
-      'assets/grill-2.jpg',
-      'assets/proxi-2.jpeg',
-      'assets/coffee-4.jpg',
-      'assets/pizza-2.jpg',
-      'assets/store-2.jpg',
-      'assets/newrest-3.jpg'
-    ];
 
     return Expanded(
       child: GridView.builder(
         padding: EdgeInsets.fromLTRB(5, 10, 5, 0),
         physics: ScrollPhysics(),
-        itemCount: locations.length,
+        itemCount: foodData.locationsData.length,
         scrollDirection: Axis.vertical,
         reverse: false,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -134,7 +122,7 @@ class _HomePageState extends State<HomePage> {
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(10)),
                         child: Image.asset(
-                          imgUrls[index],
+                          foodData.imgUrlsData[index],
                           width: 165,
                           height: 150,
                           fit: BoxFit.cover,
@@ -143,11 +131,11 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(height: 5),
                       FittedBox(
                         child: Text(
-                          locations[index],
+                          foodData.locationsData[index],
                           textScaleFactor: 1.5,
                           style: GoogleFonts.roboto(
                               fontWeight: FontWeight.w700,
-                              color: Color(barColor)),
+                              color: Color(otherColor)),
                         ),
                       ),
                       SizedBox(height: 2.5),
@@ -156,72 +144,85 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RestaurantInfo(
+                    restaurantName: foodData.locationsData,
+                    restaurantListIndex: index,
+                    restaurantImage: foodData.imgUrlsData,
+                    barColor: barColor,
+                    restaurantDetail: foodData.locationDetailsData,
+                    otherColor: otherColor,
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
     );
   }
 
-  ListView bottomCustomAppBar() {
-    return ListView(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(width: 30),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Container(
-                  width: 300,
-                  height: 60,
-                  child: SalomonBottomBar(
-                    currentIndex: _currentIndex,
-                    onTap: (i) => setState(() => _currentIndex = i),
-                    items: [
-                      /// Home
-                      SalomonBottomBarItem(
-                        icon: Icon(Icons.fastfood_outlined),
-                        activeIcon: Icon(Icons.fastfood),
-                        title: Text("Order"),
-                        selectedColor: Color(barColor),
-                      ),
+  SizedBox bottomCustomAppBar() {
+    return SizedBox(
+      height: 60,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                padding: EdgeInsets.fromLTRB(22.5, 0, 22.5, 0),
+                width: MediaQuery.of(context).size.width,
+                height: 60,
+                child: SalomonBottomBar(
+                  currentIndex: _currentIndex,
+                  onTap: (i) => setState(() => _currentIndex = i),
+                  items: [
+                    /// Home
+                    SalomonBottomBarItem(
+                      icon: Icon(Icons.fastfood_outlined),
+                      activeIcon: Icon(Icons.fastfood),
+                      title: Text("Order"),
+                      selectedColor: Color(barColor),
+                    ),
 
-                      /// Likes
-                      SalomonBottomBarItem(
-                        icon: Icon(Icons.delivery_dining_outlined),
-                        activeIcon: Icon(Icons.delivery_dining),
-                        title: Text("Deliver"),
-                        selectedColor: Color(barColor),
-                      ),
+                    /// Likes
+                    SalomonBottomBarItem(
+                      icon: Icon(Icons.delivery_dining_outlined),
+                      activeIcon: Icon(Icons.delivery_dining),
+                      title: Text("Deliver"),
+                      selectedColor: Color(barColor),
+                    ),
 
-                      /// Profile
-                      SalomonBottomBarItem(
-                        icon: Icon(Icons.person_outlined),
-                        activeIcon: Icon(Icons.person),
-                        title: Text("Profile Settings"),
-                        selectedColor: Color(barColor),
-                      ),
-                    ],
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(60),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 2,
-                          offset: const Offset(0, 2))
-                    ],
-                  ),
+                    /// Profile
+                    SalomonBottomBarItem(
+                      icon: Icon(Icons.person_outlined),
+                      activeIcon: Icon(Icons.person),
+                      title: Text("Profile Settings"),
+                      selectedColor: Color(barColor),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
-        ),
-      ],
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 0,
+                        blurRadius: 0,
+                        offset: const Offset(0, 0))
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -261,9 +262,9 @@ class _ScrollToHideWidgetState extends State<ScrollToHideWidget> {
 
   void listen() {
     final direction = widget.controller.position.userScrollDirection;
-    if (direction == ScrollDirection.reverse) {
+    if (direction == ScrollDirection.forward) {
       show();
-    } else if (direction == ScrollDirection.forward) {
+    } else if (direction == ScrollDirection.reverse) {
       hide();
     }
   }
